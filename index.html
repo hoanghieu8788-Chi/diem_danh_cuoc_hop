@@ -33,14 +33,7 @@
     <!-- Main Container -->
     <main class="max-w-7xl w-full mx-auto p-4 md:p-6 flex-grow">
 
-        <!-- Nav Tabs (Chỉ hiển thị trên máy tính của Chủ trì) -->
-        <div class="flex justify-center mb-6" id="navTabsContainer">
-            <div class="bg-emerald-200 p-1 rounded-xl flex gap-2 shadow-inner">
-                <button onclick="switchTab('host')" id="tabHost" class="px-6 py-2 rounded-lg font-semibold text-sm transition-all bg-white text-emerald-800 shadow">Giao diện chủ trì</button>
-            </div>
-        </div>
-
-        <!-- HOST VIEW -->
+        <!-- HOST VIEW (Giao diện Chủ trì trên máy tính) -->
         <div id="hostView" class="space-y-6">
             <!-- Cấu hình cuộc họp -->
             <div class="bg-white p-5 rounded-2xl shadow-md border border-emerald-100">
@@ -70,7 +63,7 @@
                     <span id="attendanceCountTop" class="text-3xl font-black text-emerald-700">0</span>
                 </div>
 
-                <div class="mb-2 text-sm font-semibold text-emerald-700 uppercase tracking-wide">Mã QR điểm danh động (Tự động đổi mỗi 60 giây)</div>
+                <div class="mb-2 text-sm font-semibold text-emerald-700 uppercase tracking-wide">Mã QR điểm danh động (Tự động đổi mới mỗi 60 giây)</div>
                 
                 <div id="qrBox" class="bg-white p-4 rounded-xl border-4 border-emerald-500 shadow-lg my-3 inline-block">
                     <div id="qrcode" class="flex justify-center"></div>
@@ -114,7 +107,7 @@
             </div>
         </div>
 
-        <!-- ATTENDEE VIEW (Màn hình điểm danh trên điện thoại) -->
+        <!-- ATTENDEE VIEW (Giao diện Điểm danh trên điện thoại của người tham dự) -->
         <div id="attendeeView" class="hidden max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg border border-emerald-100">
             <div class="text-center mb-6">
                 <h2 class="text-lg font-bold text-emerald-800">CỔNG ĐIỂM DANH CUỘC HỌP</h2>
@@ -145,8 +138,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Mã PIN 4 chữ số (Trên bảng chủ trì)</label>
-                        <input type="text" id="attPin" maxlength="4" required placeholder="Nhập 4 số" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-center font-bold tracking-widest text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Mã PIN 4 chữ số (Đã tự động điền từ mã QR)</label>
+                        <input type="text" id="attPin" maxlength="4" required readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-center font-bold tracking-widest text-lg text-emerald-700 focus:outline-none cursor-not-allowed">
                     </div>
                     <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-sm shadow transition">Gửi điểm danh</button>
                 </form>
@@ -176,7 +169,7 @@
         let timeLeft = 60;
         let isGenerating = false;
         let qrcodeInstance = null;
-        let activePin = ""; // Biến lưu mã PIN hiện tại của chủ trì
+        let currentActivePin = "";
 
         function updateDateTime() {
             const now = new Date();
@@ -187,28 +180,28 @@
         updateDateTime();
 
         window.onload = function() {
-            qrcodeInstance = new QRCode(document.getElementById("qrcode"), {
-                text: "WAITING",
-                width: 200,
-                height: 200,
-                colorDark: "#065f46",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-
+            // Kiểm tra xem trên URL có chứa tham số pin hay không (Xác định điện thoại quét mã)
             const urlParams = new URLSearchParams(window.location.search);
             const pinParam = urlParams.get('pin');
+            const tokenParam = urlParams.get('t'); // Chống giả mạo mã QR cũ
 
             if (pinParam) {
-                // ĐIỆN THOẠI QUÉT MÃ: Ẩn giao diện chủ trì, hiện form điểm danh
+                // ĐIỆN THOẠI QUÉT MÃ: Ẩn hoàn toàn giao diện chủ trì, chỉ hiển thị form điểm danh
                 document.getElementById('hostView').classList.add('hidden');
-                document.getElementById('navTabsContainer').classList.add('hidden');
                 document.getElementById('attendeeView').classList.remove('hidden');
                 
                 document.getElementById('attPin').value = pinParam;
                 checkAttendeeDeviceStatus();
             } else {
-                // MÁY TÍNH CHỦ TRÌ
+                // MÁY TÍNH CHỦ TRÌ: Hiển thị giao diện quản lý
+                qrcodeInstance = new QRCode(document.getElementById("qrcode"), {
+                    text: "WAITING",
+                    width: 200,
+                    height: 200,
+                    colorDark: "#065f46",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
                 document.getElementById('hostView').classList.remove('hidden');
                 document.getElementById('attendeeView').classList.add('hidden');
                 renderAttendanceTable();
@@ -231,12 +224,18 @@
         }
 
         function generateNewCode() {
-            activePin = Math.floor(1000 + Math.random() * 9000).toString();
-            document.getElementById('pinDisplay').innerText = `PIN: ${activePin}`;
+            currentActivePin = Math.floor(1000 + Math.random() * 9000).toString();
+            const timeToken = Date.now().toString(); // Token thời gian chống dùng lại QR cũ
             
-            // Đính kèm trực tiếp mã PIN lên URL của QR để khi quét điện thoại tự nhận diện chính xác
+            // Lưu trữ mã PIN hợp lệ hiện tại vào sessionStorage của chủ trì
+            sessionStorage.setItem('host_active_pin', currentActivePin);
+            sessionStorage.setItem('host_active_token', timeToken);
+
+            document.getElementById('pinDisplay').innerText = `PIN: ${currentActivePin}`;
+            
+            // Mã QR chứa đường dẫn kèm mã PIN và Token thời gian
             const currentUrl = window.location.href.split('?')[0];
-            const qrData = `${currentUrl}?pin=${activePin}`;
+            const qrData = `${currentUrl}?pin=${currentActivePin}&t=${timeToken}`;
             qrcodeInstance.makeCode(qrData);
             
             timeLeft = 60;
@@ -257,7 +256,7 @@
         }
 
         function getStorageKey() {
-            const meetingName = document.getElementById('cfgMeetingName').value.trim() || 'Cuộc họp';
+            const meetingName = document.getElementById('cfgMeetingName') ? document.getElementById('cfgMeetingName').value.trim() : 'Cuộc họp';
             const today = new Date().toISOString().slice(0, 10);
             return `meeting_${today}_${meetingName}`;
         }
@@ -271,13 +270,14 @@
             const urlParams = new URLSearchParams(window.location.search);
             const pinParam = urlParams.get('pin');
 
-            // Chấp nhận mã PIN từ URL được quét hoặc mã PIN đang hiển thị
-            if (pinParam && attPin !== pinParam) {
-                alert('Mã PIN không khớp với mã trên mã QR bạn đã quét! Vui lòng quét lại mã QR mới nhất.');
+            // Bắt buộc mã PIN trên form phải khớp với mã PIN đính kèm trong QR mới nhất
+            if (!pinParam || attPin !== pinParam) {
+                alert('Mã PIN không khớp hoặc mã QR đã hết hạn (quá 60 giây)! Vui lòng quét mã QR mới nhất trên màn hình chủ trì.');
                 return;
             }
 
-            const storageKey = getStorageKey();
+            // Sử dụng tên cuộc họp mặc định nếu điểm danh từ xa
+            const storageKey = `meeting_${new Date().toISOString().slice(0, 10)}_Họp giao ban trường`;
             let records = JSON.parse(localStorage.getItem(storageKey)) || [];
 
             const existingDevice = records.find(r => r.deviceId === deviceId);
@@ -288,7 +288,7 @@
 
             const now = new Date();
             const timeStr = now.toTimeString().slice(0, 5);
-            const startTime = document.getElementById('cfgStartTime') ? document.getElementById('cfgStartTime').value : '08:00';
+            const startTime = '08:00'; // Mặc định thời gian bắt đầu
 
             let status = 'Đúng giờ';
             let lateDuration = '00:00';
@@ -328,7 +328,7 @@
         }
 
         function checkAttendeeDeviceStatus() {
-            const storageKey = getStorageKey();
+            const storageKey = `meeting_${new Date().toISOString().slice(0, 10)}_Họp giao ban trường`;
             let records = JSON.parse(localStorage.getItem(storageKey)) || [];
             const existingDevice = records.find(r => r.deviceId === deviceId);
             if (existingDevice) {
