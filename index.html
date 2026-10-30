@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Điểm Danh Cuộc Họp - TRƯỜNG CAO ĐẲNG MIỀN ĐÔNG</title>
+    <title>Điểm danh cuộc họp - Trường Cao đẳng Miền Đông</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- QRCodeJS library -->
@@ -19,8 +19,8 @@
     <header class="bg-emerald-700 text-white shadow-md py-4 px-6">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
-                <h1 class="text-lg md:text-xl font-bold uppercase tracking-wide">TRƯỜNG CAO ĐẲNG MIỀN ĐÔNG</h1>
-                <p class="text-xs text-emerald-100">Hệ thống điểm danh cuộc họp trực tuyến/trực tiếp</p>
+                <h1 class="text-lg md:text-xl font-bold uppercase tracking-wide">Trường Cao đẳng Miền Đông</h1>
+                <p class="text-xs text-emerald-100">Hệ thống điểm danh cuộc họp trực tuyến và trực tiếp</p>
             </div>
             <div class="flex items-center gap-2 bg-emerald-800 px-3 py-1.5 rounded-lg text-sm">
                 <span id="currentDateDisplay" class="font-medium"></span>
@@ -36,7 +36,7 @@
         <!-- Nav Tabs (Chỉ hiển thị trên máy tính của Chủ trì) -->
         <div class="flex justify-center mb-6" id="navTabsContainer">
             <div class="bg-emerald-200 p-1 rounded-xl flex gap-2 shadow-inner">
-                <button onclick="switchTab('host')" id="tabHost" class="px-6 py-2 rounded-lg font-semibold text-sm transition-all bg-white text-emerald-800 shadow">Giao diện Chủ trì</button>
+                <button onclick="switchTab('host')" id="tabHost" class="px-6 py-2 rounded-lg font-semibold text-sm transition-all bg-white text-emerald-800 shadow">Giao diện chủ trì</button>
             </div>
         </div>
 
@@ -44,22 +44,22 @@
         <div id="hostView" class="space-y-6">
             <!-- Cấu hình cuộc họp -->
             <div class="bg-white p-5 rounded-2xl shadow-md border border-emerald-100">
-                <h2 class="text-base font-bold text-emerald-800 mb-4">Cấu Hình Cuộc Họp</h2>
+                <h2 class="text-base font-bold text-emerald-800 mb-4">Cấu hình cuộc họp</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Tên Cuộc Họp</label>
-                        <input type="text" id="cfgMeetingName" value="Họp Giao Ban Trường" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Tên cuộc họp</label>
+                        <input type="text" id="cfgMeetingName" value="Họp giao ban trường" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Thời Gian Bắt Đầu Quy Định</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Thời gian bắt đầu quy định</label>
                         <input type="time" id="cfgStartTime" value="08:00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                     </div>
                 </div>
                 <div class="mt-4 flex gap-3">
                     <button id="btnToggleGen" onclick="toggleGeneration()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-lg text-sm shadow transition flex items-center gap-2">
-                        Bắt Đầu Tạo Mã QR
+                        Bắt đầu tạo mã QR
                     </button>
-                    <button onclick="resetSessionData()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-semibold px-4 py-2.5 rounded-lg text-sm transition">Xóa Dữ Liệu</button>
+                    <button onclick="resetSessionData()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-semibold px-4 py-2.5 rounded-lg text-sm transition">Xóa dữ liệu</button>
                 </div>
             </div>
 
@@ -70,7 +70,7 @@
                     <span id="attendanceCountTop" class="text-3xl font-black text-emerald-700">0</span>
                 </div>
 
-                <div class="mb-2 text-sm font-semibold text-emerald-700 uppercase tracking-wide">Mã QR Điểm Danh Động (Tự động đổi mỗi 60 giây)</div>
+                <div class="mb-2 text-sm font-semibold text-emerald-700 uppercase tracking-wide">Mã QR điểm danh động (Tự động đổi mỗi 60 giây)</div>
                 
                 <div id="qrBox" class="bg-white p-4 rounded-xl border-4 border-emerald-500 shadow-lg my-3 inline-block">
                     <div id="qrcode" class="flex justify-center"></div>
@@ -88,11 +88,11 @@
             <div class="bg-white p-5 rounded-2xl shadow-md border border-emerald-100">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <div>
-                        <h3 class="text-base font-bold text-slate-800">Danh Sách Người Đã Điểm Danh</h3>
+                        <h3 class="text-base font-bold text-slate-800">Danh sách người đã điểm danh</h3>
                     </div>
                     <div class="flex gap-2 w-full sm:w-auto">
                         <input type="text" id="searchInput" onkeyup="renderAttendanceTable()" placeholder="Tìm họ tên hoặc đơn vị..." class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none flex-grow sm:w-64">
-                        <button onclick="exportCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-1.5 rounded-lg text-sm shadow transition whitespace-nowrap">Xuất File CSV</button>
+                        <button onclick="exportCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-1.5 rounded-lg text-sm shadow transition whitespace-nowrap">Xuất file CSV</button>
                     </div>
                 </div>
 
@@ -101,7 +101,7 @@
                         <thead class="bg-emerald-100 text-emerald-900 sticky top-0">
                             <tr>
                                 <th class="p-3">STT</th>
-                                <th class="p-3">Họ và Tên</th>
+                                <th class="p-3">Họ và tên</th>
                                 <th class="p-3">Đơn vị</th>
                                 <th class="p-3">Thời gian</th>
                                 <th class="p-3">Trạng thái</th>
@@ -114,7 +114,7 @@
             </div>
         </div>
 
-        <!-- ATTENDEE VIEW (Màn hình hiển thị độc lập trên điện thoại) -->
+        <!-- ATTENDEE VIEW (Màn hình điểm danh trên điện thoại) -->
         <div id="attendeeView" class="hidden max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg border border-emerald-100">
             <div class="text-center mb-6">
                 <h2 class="text-lg font-bold text-emerald-800">CỔNG ĐIỂM DANH CUỘC HỌP</h2>
@@ -124,28 +124,31 @@
             <div id="attendeeFormContainer">
                 <form id="attendanceForm" onsubmit="submitAttendance(event)" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Họ và Tên</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Họ và tên</label>
                         <input type="text" id="attName" required placeholder="VD: Nguyễn Văn A" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Đơn vị (Phòng / Khoa / TT)</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Đơn vị</label>
                         <select id="attUnit" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
                             <option value="">-- Chọn đơn vị công tác --</option>
-                            <option value="Khoa Kinh Tế">Khoa Kinh Tế</option>
-                            <option value="TT NNTH&HTQT">TT NNTH&HTQT</option>
-                            <option value="Phòng TC-HC">Phòng TC-HC</option>
-                            <option value="Phòng TCKT">Phòng TCKT</option>
-                            <option value="Khoa Nông học">Khoa Nông học</option>
-                            <option value="Khoa KTCN">Khoa KTCN</option>
-                            <option value="Khoa Điện-Điện tử">Khoa Điện-Điện tử</option>
-                            <option value="TT GCT">TT GCT</option>
+                            <option value="Phòng Đào tạo">Phòng Đào tạo</option>
+                            <option value="Phòng Tổ chức hành chính">Phòng Tổ chức hành chính</option>
+                            <option value="Phòng Tài chính Kế toán">Phòng Tài chính Kế toán</option>
+                            <option value="Trung tâm Ngoại ngữ - Tin học và Hợp tác quốc tế">Trung tâm Ngoại ngữ - Tin học và Hợp tác quốc tế</option>
+                            <option value="Trung tâm Truyền thông – Tuyển sinh và Quan hệ doanh nghiệp">Trung tâm Truyền thông – Tuyển sinh và Quan hệ doanh nghiệp</option>
+                            <option value="Trung tâm Đào tạo và Sát hạch lái xe">Trung tâm Đào tạo và Sát hạch lái xe</option>
+                            <option value="Trung tâm Thực nghiệm và Chuyển giao Công nghệ">Trung tâm Thực nghiệm và Chuyển giao Công nghệ</option>
+                            <option value="Khoa Nông nghiệp ứng dụng">Khoa Nông nghiệp ứng dụng</option>
+                            <option value="Khoa Điện – Điện tử">Khoa Điện – Điện tử</option>
+                            <option value="Khoa Kinh tế">Khoa Kinh tế</option>
+                            <option value="Khoa Kỹ thuật Công nghệ">Khoa Kỹ thuật Công nghệ</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Mã PIN 4 Chữ Số (Trên bảng chủ trì)</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Mã PIN 4 chữ số (Trên bảng chủ trì)</label>
                         <input type="text" id="attPin" maxlength="4" required placeholder="Nhập 4 số" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-center font-bold tracking-widest text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                     </div>
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-sm shadow transition">Gửi Điểm Danh</button>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-sm shadow transition">Gửi điểm danh</button>
                 </form>
             </div>
 
@@ -159,7 +162,7 @@
     </main>
 
     <footer class="bg-white border-t border-emerald-100 py-3 text-center text-xs text-slate-500">
-        <p>Hệ thống Điểm Danh Cuộc Họp - TRƯỜNG CAO ĐẲNG MIỀN ĐÔNG</p>
+        <p>Hệ thống điểm danh cuộc họp - Trường Cao đẳng Miền Đông</p>
     </footer>
 
     <script>
@@ -197,6 +200,7 @@
             const sessionParam = urlParams.get('session');
 
             if (pinParam && sessionParam) {
+                // ĐIỆN THOẠI QUÉT MÃ: Ẩn hoàn toàn giao diện chủ trì, chỉ hiển thị form điểm danh
                 document.getElementById('hostView').classList.add('hidden');
                 document.getElementById('navTabsContainer').classList.add('hidden');
                 document.getElementById('attendeeView').classList.remove('hidden');
@@ -205,6 +209,7 @@
                 window.currentSessionId = sessionParam;
                 checkAttendeeDeviceStatus();
             } else {
+                // MÁY TÍNH CHỦ TRÌ: Hiển thị giao diện quản lý
                 document.getElementById('hostView').classList.remove('hidden');
                 document.getElementById('attendeeView').classList.add('hidden');
                 renderAttendanceTable();
@@ -215,12 +220,12 @@
             isGenerating = !isGenerating;
             const btn = document.getElementById('btnToggleGen');
             if (isGenerating) {
-                btn.innerHTML = `Dừng Tạo Mã QR`;
+                btn.innerHTML = `Dừng tạo mã QR`;
                 btn.className = "bg-rose-600 hover:bg-rose-700 text-white font-bold px-6 py-2.5 rounded-lg text-sm shadow transition flex items-center gap-2";
                 generateNewCode();
                 timer = setInterval(countdownTick, 1000);
             } else {
-                btn.innerHTML = `Bắt Đầu Tạo Mã QR`;
+                btn.innerHTML = `Bắt đầu tạo mã QR`;
                 btn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-lg text-sm shadow transition flex items-center gap-2";
                 clearInterval(timer);
             }
@@ -261,7 +266,7 @@
         }
 
         function getStorageKey() {
-            const meetingName = document.getElementById('cfgMeetingName').value.trim() || 'Cuộc Họp';
+            const meetingName = document.getElementById('cfgMeetingName').value.trim() || 'Cuộc họp';
             const today = new Date().toISOString().slice(0, 10);
             return `meeting_${today}_${meetingName}`;
         }
@@ -381,7 +386,7 @@
         }
 
         function deleteRecord(devId) {
-            if (confirm('Xóa bản ghi này?')) {
+            if (confirm('Bạn có chắc chắn muốn xóa bản ghi này?')) {
                 const storageKey = getStorageKey();
                 let records = JSON.parse(localStorage.getItem(storageKey)) || [];
                 records = records.filter(r => r.deviceId !== devId);
@@ -391,7 +396,7 @@
         }
 
         function resetSessionData() {
-            if (confirm('Xóa toàn bộ dữ liệu cuộc họp này?')) {
+            if (confirm('CẢNH BÁO: Xóa toàn bộ dữ liệu cuộc họp này?')) {
                 localStorage.removeItem(getStorageKey());
                 renderAttendanceTable();
             }
@@ -400,9 +405,9 @@
         function exportCSV() {
             const storageKey = getStorageKey();
             let records = JSON.parse(localStorage.getItem(storageKey)) || [];
-            if (records.length === 0) { alert('Không có dữ liệu!'); return; }
+            if (records.length === 0) { alert('Không có dữ liệu để xuất file!'); return; }
 
-            let csvContent = "\uFEFFSTT,Họ và Tên,Đơn vị,Thời gian điểm danh,Trạng thái,Thời gian trễ\n";
+            let csvContent = "\uFEFFSTT,Họ và tên,Đơn vị,Thời gian điểm danh,Trạng thái,Thời gian trễ\n";
             records.forEach((r, idx) => {
                 csvContent += `${idx + 1},"${r.attName}","${r.attUnit}","${r.time}","${r.status}","${r.lateDuration}"\n`;
             });
