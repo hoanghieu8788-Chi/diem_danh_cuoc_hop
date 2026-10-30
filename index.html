@@ -33,11 +33,10 @@
     <!-- Main Container -->
     <main class="max-w-7xl w-full mx-auto p-4 md:p-6 flex-grow">
 
-        <!-- Nav Tabs (Chỉ hiển thị cho người quản lý trên máy tính) -->
+        <!-- Nav Tabs (Chỉ hiển thị trên máy tính của Chủ trì) -->
         <div class="flex justify-center mb-6" id="navTabsContainer">
             <div class="bg-emerald-200 p-1 rounded-xl flex gap-2 shadow-inner">
                 <button onclick="switchTab('host')" id="tabHost" class="px-6 py-2 rounded-lg font-semibold text-sm transition-all bg-white text-emerald-800 shadow">Giao diện Chủ trì</button>
-                <button onclick="switchTab('attendee')" id="tabAttendee" class="px-6 py-2 rounded-lg font-semibold text-sm transition-all text-emerald-900 hover:text-white">Cổng Điểm Danh</button>
             </div>
         </div>
 
@@ -45,9 +44,7 @@
         <div id="hostView" class="space-y-6">
             <!-- Cấu hình cuộc họp -->
             <div class="bg-white p-5 rounded-2xl shadow-md border border-emerald-100">
-                <h2 class="text-base font-bold text-emerald-800 mb-4 flex items-center gap-2">
-                    Cấu Hình Cuộc Họp
-                </h2>
+                <h2 class="text-base font-bold text-emerald-800 mb-4">Cấu Hình Cuộc Họp</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Tên Cuộc Họp</label>
@@ -73,7 +70,7 @@
                     <span id="attendanceCountTop" class="text-3xl font-black text-emerald-700">0</span>
                 </div>
 
-                <div class="mb-2 text-sm font-semibold text-emerald-700 uppercase tracking-wide">Mã QR Điểm Danh Động (Đổi mỗi 30 giây)</div>
+                <div class="mb-2 text-sm font-semibold text-emerald-700 uppercase tracking-wide">Mã QR Điểm Danh Động (Tự động đổi mỗi 60 giây)</div>
                 
                 <div id="qrBox" class="bg-white p-4 rounded-xl border-4 border-emerald-500 shadow-lg my-3 inline-block">
                     <div id="qrcode" class="flex justify-center"></div>
@@ -84,7 +81,7 @@
                 <div class="w-full max-w-md bg-slate-200 rounded-full h-3.5 mb-2 overflow-hidden shadow-inner">
                     <div id="countdownBar" class="bg-emerald-500 h-3.5 rounded-full transition-all duration-1000" style="width: 100%"></div>
                 </div>
-                <p class="text-xs text-slate-500" id="countdownText">Mã sẽ tự động làm mới sau 30 giây...</p>
+                <p class="text-xs text-slate-500" id="countdownText">Mã sẽ tự động làm mới sau 60 giây...</p>
             </div>
 
             <!-- Bảng Danh sách -->
@@ -117,7 +114,7 @@
             </div>
         </div>
 
-        <!-- ATTENDEE VIEW (Màn hình hiển thị cho điện thoại khi quét) -->
+        <!-- ATTENDEE VIEW (Màn hình hiển thị độc lập trên điện thoại) -->
         <div id="attendeeView" class="hidden max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg border border-emerald-100">
             <div class="text-center mb-6">
                 <h2 class="text-lg font-bold text-emerald-800">CỔNG ĐIỂM DANH CUỘC HỌP</h2>
@@ -145,7 +142,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Mã PIN 4 Chữ Số (Xem trên màn hình chính)</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Mã PIN 4 Chữ Số (Trên bảng chủ trì)</label>
                         <input type="text" id="attPin" maxlength="4" required placeholder="Nhập 4 số" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-center font-bold tracking-widest text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                     </div>
                     <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-sm shadow transition">Gửi Điểm Danh</button>
@@ -172,9 +169,8 @@
             localStorage.setItem('meeting_device_id', deviceId);
         }
 
-        let currentPin = '';
         let timer = null;
-        let timeLeft = 30;
+        let timeLeft = 60;
         let isGenerating = false;
         let qrcodeInstance = null;
 
@@ -186,27 +182,6 @@
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
-        function switchTab(tab) {
-            const hView = document.getElementById('hostView');
-            const aView = document.getElementById('attendeeView');
-            const hBtn = document.getElementById('tabHost');
-            const aBtn = document.getElementById('tabAttendee');
-
-            if (tab === 'host') {
-                hView.classList.remove('hidden');
-                aView.classList.add('hidden');
-                hBtn.className = "px-6 py-2 rounded-lg font-semibold text-sm transition-all bg-white text-emerald-800 shadow";
-                aBtn.className = "px-6 py-2 rounded-lg font-semibold text-sm transition-all text-emerald-900 hover:text-white";
-                renderAttendanceTable();
-            } else {
-                hView.classList.add('hidden');
-                aView.classList.remove('hidden');
-                aBtn.className = "px-6 py-2 rounded-lg font-semibold text-sm transition-all bg-white text-emerald-800 shadow";
-                hBtn.className = "px-6 py-2 rounded-lg font-semibold text-sm transition-all text-emerald-900 hover:text-white";
-                checkAttendeeDeviceStatus();
-            }
-        }
-
         window.onload = function() {
             qrcodeInstance = new QRCode(document.getElementById("qrcode"), {
                 text: "WAITING",
@@ -217,17 +192,23 @@
                 correctLevel: QRCode.CorrectLevel.H
             });
 
-            // TỰ ĐỘNG NHẬN DIỆN: Nếu có chữ ?pin= trên URL -> Mở thẳng form cho học sinh/người quét. 
-            // Nếu không có -> Giữ nguyên giao diện quản lý của bạn trên máy tính.
             const urlParams = new URLSearchParams(window.location.search);
             const pinParam = urlParams.get('pin');
-            if (pinParam) {
-                switchTab('attendee');
+            const sessionParam = urlParams.get('session');
+
+            if (pinParam && sessionParam) {
+                document.getElementById('hostView').classList.add('hidden');
+                document.getElementById('navTabsContainer').classList.add('hidden');
+                document.getElementById('attendeeView').classList.remove('hidden');
+                
                 document.getElementById('attPin').value = pinParam;
+                window.currentSessionId = sessionParam;
+                checkAttendeeDeviceStatus();
             } else {
-                switchTab('host');
+                document.getElementById('hostView').classList.remove('hidden');
+                document.getElementById('attendeeView').classList.add('hidden');
+                renderAttendanceTable();
             }
-            renderAttendanceTable();
         }
 
         function toggleGeneration() {
@@ -246,22 +227,33 @@
         }
 
         function generateNewCode() {
-            currentPin = Math.floor(1000 + Math.random() * 9000).toString();
+            const currentPin = Math.floor(1000 + Math.random() * 9000).toString();
+            const sessionId = Math.random().toString(36).substr(2, 6); 
+            
+            const oldPin = localStorage.getItem('active_pin');
+            if (oldPin) {
+                localStorage.setItem('previous_pin', oldPin);
+            }
+            localStorage.setItem('active_pin', currentPin);
+            localStorage.setItem('active_session', sessionId);
+
             document.getElementById('pinDisplay').innerText = `PIN: ${currentPin}`;
             
-            // Lấy đúng link web trên GitHub của bạn và gắn kèm mã PIN tự động
             const currentUrl = window.location.href.split('?')[0];
-            const qrData = `${currentUrl}?pin=${currentPin}`;
+            const qrData = `${currentUrl}?pin=${currentPin}&session=${sessionId}`;
             qrcodeInstance.makeCode(qrData);
             
-            timeLeft = 30;
+            timeLeft = 60;
         }
 
         function countdownTick() {
             timeLeft--;
-            const percent = (timeLeft / 30) * 100;
-            document.getElementById('countdownBar').style.width = `${percent}%`;
-            document.getElementById('countdownText').innerText = `Mã sẽ tự động làm mới sau ${timeLeft} giây...`;
+            const percent = (timeLeft / 60) * 100;
+            const bar = document.getElementById('countdownBar');
+            if (bar) bar.style.width = `${percent}%`;
+            
+            const text = document.getElementById('countdownText');
+            if (text) text.innerText = `Mã sẽ tự động làm mới sau ${timeLeft} giây...`;
 
             if (timeLeft <= 0) {
                 generateNewCode();
@@ -280,8 +272,11 @@
             const attUnit = document.getElementById('attUnit').value;
             const attPin = document.getElementById('attPin').value.trim();
 
-            if (attPin !== currentPin) {
-                alert('Mã PIN không chính xác hoặc đã hết hạn! Vui lòng kiểm tra lại mã trên màn hình chủ trì.');
+            const activePin = localStorage.getItem('active_pin');
+            const previousPin = localStorage.getItem('previous_pin');
+
+            if (!activePin || (attPin !== activePin && attPin !== previousPin)) {
+                alert('Mã PIN không chính xác hoặc đã quá hạn! Vui lòng cập nhật lại mã PIN mới nhất trên bảng chủ trì.');
                 return;
             }
 
@@ -296,7 +291,7 @@
 
             const now = new Date();
             const timeStr = now.toTimeString().slice(0, 5);
-            const startTime = document.getElementById('cfgStartTime').value;
+            const startTime = document.getElementById('cfgStartTime') ? document.getElementById('cfgStartTime').value : '08:00';
 
             let status = 'Đúng giờ';
             let lateDuration = '00:00';
@@ -350,10 +345,13 @@
         function renderAttendanceTable() {
             const storageKey = getStorageKey();
             let records = JSON.parse(localStorage.getItem(storageKey)) || [];
-            document.getElementById('attendanceCountTop').innerText = records.length;
+            const countEl = document.getElementById('attendanceCountTop');
+            if (countEl) countEl.innerText = records.length;
 
-            const searchKey = document.getElementById('searchInput').value.toLowerCase();
+            const searchInput = document.getElementById('searchInput');
+            const searchKey = searchInput ? searchInput.value.toLowerCase() : '';
             const tbody = document.getElementById('attendanceTableBody');
+            if (!tbody) return;
             tbody.innerHTML = '';
 
             const filtered = records.filter(r => r.attName.toLowerCase().includes(searchKey) || r.attUnit.toLowerCase().includes(searchKey));
