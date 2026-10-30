@@ -131,13 +131,13 @@
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Đơn vị</label>
                         <select id="attUnit" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
                             <option value="">-- Chọn đơn vị công tác --</option>
-                            <option value="Phòng Đào tạo">Phòng Đào tạo</option>
-                            <option value="Phòng Tổ chức hành chính">Phòng Tổ chức hành chính</option>
-                            <option value="Phòng Tài chính Kế toán">Phòng Tài chính Kế toán</option>
-                            <option value="Trung tâm Ngoại ngữ - Tin học và Hợp tác quốc tế">Trung tâm Ngoại ngữ - Tin học và Hợp tác quốc tế</option>
-                            <option value="Trung tâm Truyền thông – Tuyển sinh và Quan hệ doanh nghiệp">Trung tâm Truyền thông – Tuyển sinh và Quan hệ doanh nghiệp</option>
-                            <option value="Trung tâm Đào tạo và Sát hạch lái xe">Trung tâm Đào tạo và Sát hạch lái xe</option>
-                            <option value="Trung tâm Thực nghiệm và Chuyển giao Công nghệ">Trung tâm Thực nghiệm và Chuyển giao Công nghệ</option>
+                            <option value="P. Đào tạo">P. Đào tạo</option>
+                            <option value="P. Tổ chức hành chính">P. Tổ chức hành chính</option>
+                            <option value="P. Tài chính Kế toán">P. Tài chính Kế toán</option>
+                            <option value="TT NN-TH và HTQT">TT NN-TH và HTQT</option>
+                            <option value="TT Truyền thông – Tuyển sinh và QHDN">TT Truyền thông – Tuyển sinh và QHDN</option>
+                            <option value="TT Đào tạo và Sát hạch lái xe">TT Đào tạo và Sát hạch lái xe</option>
+                            <option value="TT Thực nghiệm và CGCN">TT Thực nghiệm và CGCN</option>
                             <option value="Khoa Nông nghiệp ứng dụng">Khoa Nông nghiệp ứng dụng</option>
                             <option value="Khoa Điện – Điện tử">Khoa Điện – Điện tử</option>
                             <option value="Khoa Kinh tế">Khoa Kinh tế</option>
@@ -200,7 +200,6 @@
             const sessionParam = urlParams.get('session');
 
             if (pinParam && sessionParam) {
-                // ĐIỆN THOẠI QUÉT MÃ: Ẩn hoàn toàn giao diện chủ trì, chỉ hiển thị form điểm danh
                 document.getElementById('hostView').classList.add('hidden');
                 document.getElementById('navTabsContainer').classList.add('hidden');
                 document.getElementById('attendeeView').classList.remove('hidden');
@@ -209,7 +208,6 @@
                 window.currentSessionId = sessionParam;
                 checkAttendeeDeviceStatus();
             } else {
-                // MÁY TÍNH CHỦ TRÌ: Hiển thị giao diện quản lý
                 document.getElementById('hostView').classList.remove('hidden');
                 document.getElementById('attendeeView').classList.add('hidden');
                 renderAttendanceTable();
@@ -235,11 +233,12 @@
             const currentPin = Math.floor(1000 + Math.random() * 9000).toString();
             const sessionId = Math.random().toString(36).substr(2, 6); 
             
-            const oldPin = localStorage.getItem('active_pin');
-            if (oldPin) {
-                localStorage.setItem('previous_pin', oldPin);
-            }
-            localStorage.setItem('active_pin', currentPin);
+            // Lưu trữ lịch sử 3 mã PIN gần nhất (dung sai rộng để người dùng nhập chậm hoặc lệch thời gian vẫn không bao giờ bị lỗi)
+            let validPins = JSON.parse(localStorage.getItem('valid_pins') || '[]');
+            validPins.unshift(currentPin);
+            if (validPins.length > 3) validPins.pop(); // Giữ lại 3 mã gần nhất (tương đương 3 phút dung sai)
+            
+            localStorage.setItem('valid_pins', JSON.stringify(validPins));
             localStorage.setItem('active_session', sessionId);
 
             document.getElementById('pinDisplay').innerText = `PIN: ${currentPin}`;
@@ -277,11 +276,11 @@
             const attUnit = document.getElementById('attUnit').value;
             const attPin = document.getElementById('attPin').value.trim();
 
-            const activePin = localStorage.getItem('active_pin');
-            const previousPin = localStorage.getItem('previous_pin');
+            const validPins = JSON.parse(localStorage.getItem('valid_pins') || '[]');
 
-            if (!activePin || (attPin !== activePin && attPin !== previousPin)) {
-                alert('Mã PIN không chính xác hoặc đã quá hạn! Vui lòng cập nhật lại mã PIN mới nhất trên bảng chủ trì.');
+            // Kiểm tra xem mã PIN người dùng nhập có nằm trong danh sách mã hợp lệ gần đây hay không
+            if (!validPins.includes(attPin)) {
+                alert('Mã PIN không chính xác hoặc đã quá hạn! Vui lòng nhập mã PIN mới nhất đang hiển thị trên bảng chủ trì.');
                 return;
             }
 
